@@ -10,11 +10,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
+import com.bucketdrops.vivek.bucketdrops.beans.Drop;
+
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 
 public class ActivityMain extends AppCompatActivity{
+    public static final String TAG="vivekMainThread";
     Toolbar mToolbar;
     Button mAddDrop;
     RecyclerView mRecyclerView;
+    Realm mRealm;
+    RealmResults<Drop> mResults;
+    AdapterDrops mAdapter;
 
     private View.OnClickListener mBtnAddListener= new View.OnClickListener() {
         /**
@@ -29,20 +38,34 @@ public class ActivityMain extends AppCompatActivity{
         }
     };
 
+    private RealmChangeListener mChangeListener= new RealmChangeListener() {
+        @Override
+        public void onChange(Object o) {
+            mAdapter.update(mResults); /*To call Update method in AdapterDrop so that the change can be reflected after addition of an item*/
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mRealm=Realm.getDefaultInstance();
+        mResults=mRealm.where(Drop.class).findAllAsync();
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mAddDrop=(Button) findViewById(R.id.btnAddDrop);
         mRecyclerView=(RecyclerView) findViewById(R.id.rv_drops);
+
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(new AdapterDrops(this));
+        mAdapter=new AdapterDrops(this,mResults);
+        mRecyclerView.setAdapter(mAdapter);
 
         mAddDrop.setOnClickListener(mBtnAddListener);
+
         setSupportActionBar(mToolbar);
+
         initBackgroundImage();
     }
 
@@ -52,5 +75,15 @@ public class ActivityMain extends AppCompatActivity{
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mResults.addChangeListener(mChangeListener);
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mResults.removeChangeListener(mChangeListener);
+    }
 }

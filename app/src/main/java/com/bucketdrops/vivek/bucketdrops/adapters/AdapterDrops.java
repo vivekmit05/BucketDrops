@@ -9,8 +9,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bucketdrops.vivek.bucketdrops.R;
+import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 
 import java.util.ArrayList;
+
+import io.realm.RealmResults;
 
 /**
  * Created by vivek on 2/23/2018.
@@ -19,12 +22,18 @@ import java.util.ArrayList;
 public class AdapterDrops extends RecyclerView.Adapter<AdapterDrops.DropHolder> {
 
     private LayoutInflater mInflater; /*Declared here so that it has global scope in the file*/
-    private ArrayList<String> mItems=new ArrayList<>();
+    private RealmResults<Drop> mResults;
     public static final String TAG="Vivek";
 
-    public AdapterDrops(Context context) {
+    public AdapterDrops(Context context,RealmResults<Drop> results) {
         mInflater=LayoutInflater.from(context);
-        mItems=generateValues();
+        update(results);
+    }
+
+    public void update(RealmResults<Drop> results){
+        mResults=results;
+        notifyDataSetChanged();
+        Log.d(TAG, "update: "+mResults.size());
     }
 
     /*Method to generate dummy values*/
@@ -48,13 +57,14 @@ public class AdapterDrops extends RecyclerView.Adapter<AdapterDrops.DropHolder> 
 
     @Override
     public void onBindViewHolder(DropHolder holder, int position) {
-        holder.mTextWhat.setText(mItems.get(position));
+        Drop objDrop=mResults.get(position);
+        holder.mTextWhat.setText(objDrop.getStrWhat());
         Log.d(TAG, "onBindViewHolder: "+position);
     }
 
     @Override
     public int getItemCount() {
-        return 100;
+        return mResults.size();
     }
 
     public static class DropHolder extends RecyclerView.ViewHolder{
