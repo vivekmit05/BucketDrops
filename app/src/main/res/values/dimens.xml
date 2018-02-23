@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="btn_add_it_stroke_width">1dp</dimen>
+    <dimen name="btn_add_it_radius">2dp</dimen>
+    <dimen name="iv_logo_size">192dp</dimen>
+    <dimen name="iv_margin">84dp</dimen>
+</resources>
