@@ -3,7 +3,6 @@ package com.bucketdrops.vivek.bucketdrops;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +10,7 @@ import android.widget.ImageView;
 
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
+import com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -19,8 +19,9 @@ import io.realm.RealmResults;
 public class ActivityMain extends AppCompatActivity{
     public static final String TAG="vivekMainThread";
     Toolbar mToolbar;
+    View mEmptyView;
     Button mAddDrop;
-    RecyclerView mRecyclerView;
+    BucketRecyclerView mRecyclerView;
     Realm mRealm;
     RealmResults<Drop> mResults;
     AdapterDrops mAdapter;
@@ -55,7 +56,11 @@ public class ActivityMain extends AppCompatActivity{
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mAddDrop=(Button) findViewById(R.id.btnAddDrop);
-        mRecyclerView=(RecyclerView) findViewById(R.id.rv_drops);
+        mEmptyView=(View) findViewById(R.id.empty_drops);
+        mRecyclerView=(BucketRecyclerView) findViewById(R.id.rv_drops);
+
+        mRecyclerView.hideIfEmpty(mToolbar);
+        mRecyclerView.showIfEmpty(mEmptyView);
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
