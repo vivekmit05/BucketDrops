@@ -6,15 +6,14 @@
     android:layout_height="match_parent"
     tools:context="com.bucketdrops.vivek.bucketdrops.ActivityMain">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar"></include>
-
     <ImageView
         android:id="@+id/iv_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar" />
+        android:layout_height="match_parent" />
+    
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"></include>
 
     <com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView
         android:id="@+id/rv_drops"
