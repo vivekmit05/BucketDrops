@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.bucketdrops.vivek.bucketdrops.R;
@@ -19,60 +20,93 @@ import io.realm.RealmResults;
  * Created by vivek on 2/23/2018.
  */
 
-public class AdapterDrops extends RecyclerView.Adapter<AdapterDrops.DropHolder> {
+public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private LayoutInflater mInflater; /*Declared here so that it has global scope in the file*/
     private RealmResults<Drop> mResults;
-    public static final String TAG="Vivek";
+    public static final String TAG = "Vivek";
+    public static final int ITEM = 0;
+    public static final int FOOTER = 1;
 
-    public AdapterDrops(Context context,RealmResults<Drop> results) {
-        mInflater=LayoutInflater.from(context);
+    public AdapterDrops(Context context, RealmResults<Drop> results) {
+        mInflater = LayoutInflater.from(context);
         update(results);
     }
 
-    public void update(RealmResults<Drop> results){
-        mResults=results;
+    public void update(RealmResults<Drop> results) {
+        mResults = results;
         notifyDataSetChanged();
-        Log.d(TAG, "update: "+mResults.size());
+        Log.d(TAG, "update: " + mResults.size());
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mResults == null || position < mResults.size()) {
+            return ITEM;
+        } else {
+            return FOOTER;
+        }
     }
 
     /*Method to generate dummy values*/
     public static ArrayList<String> generateValues() {
-        ArrayList<String> dummyValues=new ArrayList<>();
-        for (int i=1;i<101;i++){
-            dummyValues.add("Item "+i);
+        ArrayList<String> dummyValues = new ArrayList<>();
+        for (int i = 1; i < 101; i++) {
+            dummyValues.add("Item " + i);
         }
         return dummyValues;
     }
 
 
     @Override
-    public DropHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == FOOTER) {
+            View view = mInflater.inflate(R.layout.footer, parent, false);
+            FooterHolder holder = new FooterHolder(view);
+            return holder;
+        } else {
+            View view = mInflater.inflate(R.layout.row_drop, parent, false);
+            DropHolder holder = new DropHolder(view);
+            return holder;
+        }
 
-       View view= mInflater.inflate(R.layout.row_drop,parent,false);
-        DropHolder holder=new DropHolder(view);
-        Log.d(TAG, "onCreateViewHolder: ");
-        return holder;
+
     }
 
     @Override
-    public void onBindViewHolder(DropHolder holder, int position) {
-        Drop objDrop=mResults.get(position);
-        holder.mTextWhat.setText(objDrop.getStrWhat());
-        Log.d(TAG, "onBindViewHolder: "+position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof DropHolder) {
+            DropHolder objDropHolder = (DropHolder) holder;
+            Drop objDrop = mResults.get(position);
+            objDropHolder.mTextWhat.setText(objDrop.getStrWhat());
+        }
+
+        Log.d(TAG, "onBindViewHolder: " + position);
     }
 
     @Override
     public int getItemCount() {
-        return mResults.size();
+
+        return mResults.size()+1;
     }
 
-    public static class DropHolder extends RecyclerView.ViewHolder{
+    public static class DropHolder extends RecyclerView.ViewHolder {
 
         TextView mTextWhat;
+
         public DropHolder(View itemView) {
             super(itemView);
-            mTextWhat=(TextView) itemView.findViewById(R.id.tv_what);
+            mTextWhat = (TextView) itemView.findViewById(R.id.tv_what);
+        }
+    }
+
+    public static class FooterHolder extends RecyclerView.ViewHolder {
+
+        Button mBtnAddFooter;
+
+        public FooterHolder(View itemView) {
+            super(itemView);
+            mBtnAddFooter = (Button) itemView.findViewById(R.id.btn_footer);
         }
     }
 }
