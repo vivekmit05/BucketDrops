@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
+import com.bucketdrops.vivek.bucketdrops.adapters.AddListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.Divider;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 import com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView;
@@ -35,10 +36,21 @@ public class ActivityMain extends AppCompatActivity{
          */
         @Override
         public void onClick(View v) {
-            FragmentDialog dialogAdd=new FragmentDialog();
-            dialogAdd.show(getSupportFragmentManager(),"Add Drop");
+            showDialogAdd();
         }
     };
+
+    private AddListener mAddListener=new AddListener() {
+        @Override
+        public void add() {
+            showDialogAdd();
+        }
+    };
+
+    private void showDialogAdd(){
+        FragmentDialog dialogAdd=new FragmentDialog();
+        dialogAdd.show(getSupportFragmentManager(),"Add Drop");
+    }
 
     private RealmChangeListener mChangeListener= new RealmChangeListener() {
         @Override
@@ -70,7 +82,8 @@ public class ActivityMain extends AppCompatActivity{
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter=new AdapterDrops(this,mResults);
+        mAdapter=new AdapterDrops(this,mResults,mAddListener);
+
         mRecyclerView.setAdapter(mAdapter);
 
         mAddDrop.setOnClickListener(mBtnAddListener);
