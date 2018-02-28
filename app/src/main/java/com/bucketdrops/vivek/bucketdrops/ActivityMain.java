@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
+import com.bucketdrops.vivek.bucketdrops.adapters.Divider;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 import com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView;
 
@@ -58,6 +59,11 @@ public class ActivityMain extends AppCompatActivity{
         mAddDrop=(Button) findViewById(R.id.btnAddDrop);
         mEmptyView=(View) findViewById(R.id.empty_drops);
         mRecyclerView=(BucketRecyclerView) findViewById(R.id.rv_drops);
+        try {
+            mRecyclerView.addItemDecoration(new Divider(this,LinearLayoutManager.VERTICAL));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
         mRecyclerView.hideIfEmpty(mToolbar);
         mRecyclerView.showIfEmpty(mEmptyView);
