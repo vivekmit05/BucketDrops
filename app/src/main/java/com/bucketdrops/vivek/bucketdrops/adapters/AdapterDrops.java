@@ -14,13 +14,14 @@ import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
  * Created by vivek on 2/23/2018.
  */
 
-public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SwipeListener{
 
     private LayoutInflater mInflater; /*Declared here so that it has global scope in the file*/
     private RealmResults<Drop> mResults;
@@ -28,14 +29,17 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public static final int ITEM = 0;
     public static final int FOOTER = 1;
     private AddListener mAddListener;
+    private Realm mRealm;
 
-    public AdapterDrops(Context context, RealmResults<Drop> results) {
+    public AdapterDrops(Context context, Realm realm,RealmResults<Drop> results) {
         mInflater = LayoutInflater.from(context);
+        mRealm=realm;
         update(results);
     }
-    public AdapterDrops(Context context, RealmResults<Drop> results,AddListener listener) {
+    public AdapterDrops(Context context, Realm realm,RealmResults<Drop> results,AddListener listener) {
         mInflater = LayoutInflater.from(context);
         update(results);
+        mRealm=realm;
         mAddListener=listener;
     }
 
@@ -93,7 +97,23 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
 
-        return mResults.size()+1;
+        if(mResults==null || mResults.isEmpty()){
+            return 0;
+        }
+        else{
+            return mResults.size()+1;
+        }
+    }
+
+    @Override
+    public void onSwipe(int position) {
+        if(position<mResults.size()){
+            mRealm.beginTransaction();
+            mResults.get(position).deleteFromRealm();
+            mRealm.commitTransaction();
+            notifyItemRemoved(position);
+        }
+
     }
 
     public static class DropHolder extends RecyclerView.ViewHolder {

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
 import com.bucketdrops.vivek.bucketdrops.adapters.AddListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.Divider;
+import com.bucketdrops.vivek.bucketdrops.adapters.SimpleTouchCallBack;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 import com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView;
 
@@ -82,9 +84,13 @@ public class ActivityMain extends AppCompatActivity{
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter=new AdapterDrops(this,mResults,mAddListener);
+        mAdapter=new AdapterDrops(this,mRealm,mResults,mAddListener);
 
         mRecyclerView.setAdapter(mAdapter);
+
+        SimpleTouchCallBack callBack=new SimpleTouchCallBack(mAdapter);
+        ItemTouchHelper helper=new ItemTouchHelper(callBack);
+        helper.attachToRecyclerView(mRecyclerView);
 
         mAddDrop.setOnClickListener(mBtnAddListener);
 
