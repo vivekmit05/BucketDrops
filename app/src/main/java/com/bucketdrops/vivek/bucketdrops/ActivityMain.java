@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
 import com.bucketdrops.vivek.bucketdrops.adapters.AddListener;
@@ -24,6 +23,7 @@ import com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ActivityMain extends AppCompatActivity {
     public static final String TAG = "vivekMainThread";
@@ -144,20 +144,24 @@ public class ActivityMain extends AppCompatActivity {
         int id=item.getItemId();
         switch (id){
             case R.id.action_Add:
-                Toast.makeText(this, "Add was clicked", Toast.LENGTH_SHORT).show();
-                break;
+                showDialogAdd();
+                return true;
             case R.id.action_sort_desecending_dates:
-                Toast.makeText(this, "Desecending dates was clicked", Toast.LENGTH_SHORT).show();
-                break;
+                mResults=mRealm.where(Drop.class).sort("whenTime", Sort.DESCENDING).findAllAsync();
+                mResults.addChangeListener(mChangeListener);
+                return true;
             case R.id.action_sort_ascending_dates:
-                Toast.makeText(this, "Ascending dates was clicked", Toast.LENGTH_SHORT).show();
-                break;
+                mResults=mRealm.where(Drop.class).sort("whenTime").findAllAsync();
+                mResults.addChangeListener(mChangeListener);
+                return true;
             case R.id.action_show_complete:
-                Toast.makeText(this, "Complete was clicked", Toast.LENGTH_SHORT).show();
-                break;
+                mResults=mRealm.where(Drop.class).equalTo("boolCompleted",true).findAllAsync();
+                mResults.addChangeListener(mChangeListener);
+                return true;
             case R.id.action_show_incomplete:
-                Toast.makeText(this, "Incomplete was clicked", Toast.LENGTH_SHORT).show();
-                break;
+                mResults=mRealm.where(Drop.class).equalTo("boolCompleted",false).findAllAsync();
+                mResults.addChangeListener(mChangeListener);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
