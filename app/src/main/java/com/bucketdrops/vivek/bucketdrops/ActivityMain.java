@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
 import com.bucketdrops.vivek.bucketdrops.adapters.AddListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.Divider;
+import com.bucketdrops.vivek.bucketdrops.adapters.MarkListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.SimpleTouchCallBack;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 import com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView;
@@ -49,9 +50,24 @@ public class ActivityMain extends AppCompatActivity{
         }
     };
 
+    private MarkListener markListener =new MarkListener() {
+        @Override
+        public void onMark(int position) {
+            showDialogMark(position);
+        }
+    };
+
     private void showDialogAdd(){
         FragmentDialog dialogAdd=new FragmentDialog();
         dialogAdd.show(getSupportFragmentManager(),"Add Drop");
+    }
+
+    private void showDialogMark(int position){
+        DialogMark dialogMark=new DialogMark();
+        Bundle bundle=new Bundle();
+        bundle.putInt("POSITION",position);
+        dialogMark.setArguments(bundle);
+        dialogMark.show(getSupportFragmentManager(),"Mark");
     }
 
     private RealmChangeListener mChangeListener= new RealmChangeListener() {
@@ -84,7 +100,7 @@ public class ActivityMain extends AppCompatActivity{
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter=new AdapterDrops(this,mRealm,mResults,mAddListener);
+        mAdapter=new AdapterDrops(this,mRealm,mResults,mAddListener, markListener);
 
         mRecyclerView.setAdapter(mAdapter);
 

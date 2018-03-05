@@ -21,8 +21,9 @@ import io.realm.RealmResults;
  * Created by vivek on 2/23/2018.
  */
 
-public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SwipeListener{
+public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SwipeListener {
 
+    private MarkListener mMarkListener;
     private LayoutInflater mInflater; /*Declared here so that it has global scope in the file*/
     private RealmResults<Drop> mResults;
     public static final String TAG = "Vivek";
@@ -31,16 +32,18 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private AddListener mAddListener;
     private Realm mRealm;
 
-    public AdapterDrops(Context context, Realm realm,RealmResults<Drop> results) {
+    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
         mInflater = LayoutInflater.from(context);
-        mRealm=realm;
+        mRealm = realm;
         update(results);
     }
-    public AdapterDrops(Context context, Realm realm,RealmResults<Drop> results,AddListener listener) {
+
+    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener listener, MarkListener markListener) {
         mInflater = LayoutInflater.from(context);
         update(results);
-        mRealm=realm;
-        mAddListener=listener;
+        mRealm = realm;
+        mAddListener = listener;
+        mMarkListener = markListener;
     }
 
     public void update(RealmResults<Drop> results) {
@@ -72,11 +75,11 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == FOOTER) {
             View view = mInflater.inflate(R.layout.footer, parent, false);
-            FooterHolder holder = new FooterHolder(view,mAddListener);
+            FooterHolder holder = new FooterHolder(view, mAddListener);
             return holder;
         } else {
             View view = mInflater.inflate(R.layout.row_drop, parent, false);
-            DropHolder holder = new DropHolder(view);
+            DropHolder holder = new DropHolder(view, mMarkListener);
             return holder;
         }
 
@@ -97,17 +100,16 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public int getItemCount() {
 
-        if(mResults==null || mResults.isEmpty()){
+        if (mResults == null || mResults.isEmpty()) {
             return 0;
-        }
-        else{
-            return mResults.size()+1;
+        } else {
+            return mResults.size() + 1;
         }
     }
 
     @Override
     public void onSwipe(int position) {
-        if(position<mResults.size()){
+        if (position < mResults.size()) {
             mRealm.beginTransaction();
             mResults.get(position).deleteFromRealm();
             mRealm.commitTransaction();
@@ -116,13 +118,23 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     }
 
-    public static class DropHolder extends RecyclerView.ViewHolder {
+    public static class DropHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView mTextWhat;
+        TextView mTextWhen;
+        MarkListener mMarkListener;
 
-        public DropHolder(View itemView) {
+        public DropHolder(View itemView, MarkListener listener) {
             super(itemView);
+            itemView.setOnClickListener(this);
             mTextWhat = (TextView) itemView.findViewById(R.id.tv_what);
+            mTextWhen = (TextView) itemView.findViewById(R.id.tv_when);
+            mMarkListener = listener;
+        }
+
+        @Override
+        public void onClick(View v) {
+            mMarkListener.onMark(getLayoutPosition());
         }
     }
 
@@ -136,11 +148,12 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             mBtnAddFooter = (Button) itemView.findViewById(R.id.btn_footer);
             mBtnAddFooter.setOnClickListener(this);
         }
-        public FooterHolder(View itemView,AddListener listener) {
+
+        public FooterHolder(View itemView, AddListener listener) {
             super(itemView);
             mBtnAddFooter = (Button) itemView.findViewById(R.id.btn_footer);
             mBtnAddFooter.setOnClickListener(this);
-            mListener=listener;
+            mListener = listener;
         }
 
         @Override
