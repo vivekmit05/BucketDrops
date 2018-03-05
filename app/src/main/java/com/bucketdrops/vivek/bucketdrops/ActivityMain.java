@@ -5,9 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
 import com.bucketdrops.vivek.bucketdrops.adapters.AddListener;
@@ -128,6 +131,35 @@ public class ActivityMain extends AppCompatActivity {
         ImageView ivBackground = (ImageView) findViewById(R.id.iv_background);
         GlideApp.with(this).load(R.drawable.background).centerCrop().into(ivBackground);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id=item.getItemId();
+        switch (id){
+            case R.id.action_Add:
+                Toast.makeText(this, "Add was clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_sort_desecending_dates:
+                Toast.makeText(this, "Desecending dates was clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_sort_ascending_dates:
+                Toast.makeText(this, "Ascending dates was clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_show_complete:
+                Toast.makeText(this, "Complete was clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_show_incomplete:
+                Toast.makeText(this, "Incomplete was clicked", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
