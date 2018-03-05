@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +97,7 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             DropHolder objDropHolder = (DropHolder) holder;
             Drop objDrop = mResults.get(position);
             objDropHolder.setWhat(objDrop.getStrWhat());
+            objDropHolder.setWhen(objDrop.getWhenTime());
             objDropHolder.setBackground(objDrop.isBoolCompleted());
         }
 
@@ -169,6 +171,9 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             mMarkListener.onMark(getLayoutPosition());
         }
 
+        public void setWhen(long whenTime) {
+            mTextWhen.setText(DateUtils.getRelativeTimeSpanString(whenTime,System.currentTimeMillis(),DateUtils.DAY_IN_MILLIS,DateUtils.FORMAT_ABBREV_ALL));
+        }
     }
 
     public static class FooterHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
