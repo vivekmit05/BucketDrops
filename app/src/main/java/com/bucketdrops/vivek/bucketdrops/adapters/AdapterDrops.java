@@ -1,6 +1,8 @@
 package com.bucketdrops.vivek.bucketdrops.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 
 import com.bucketdrops.vivek.bucketdrops.R;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
+import com.bucketdrops.vivek.bucketdrops.extras.Util;
 
 import java.util.ArrayList;
 
@@ -31,6 +34,7 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public static final int FOOTER = 1;
     private AddListener mAddListener;
     private Realm mRealm;
+
 
     public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
         mInflater = LayoutInflater.from(context);
@@ -91,7 +95,8 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (holder instanceof DropHolder) {
             DropHolder objDropHolder = (DropHolder) holder;
             Drop objDrop = mResults.get(position);
-            objDropHolder.mTextWhat.setText(objDrop.getStrWhat());
+            objDropHolder.setWhat(objDrop.getStrWhat());
+            objDropHolder.setBackground(objDrop.isBoolCompleted());
         }
 
         Log.d(TAG, "onBindViewHolder: " + position);
@@ -118,24 +123,52 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     }
 
+    public void markComplete(int position) {
+        if (position < mResults.size()) {
+            mRealm.beginTransaction();
+            mResults.get(position).setBoolCompleted(true);
+            mRealm.commitTransaction();
+            notifyItemChanged(position);
+        }
+    }
+
     public static class DropHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView mTextWhat;
         TextView mTextWhen;
         MarkListener mMarkListener;
+        Context mContext;
+        View mItemView;
 
         public DropHolder(View itemView, MarkListener listener) {
             super(itemView);
+            mItemView = itemView;
+            mContext = itemView.getContext();
             itemView.setOnClickListener(this);
             mTextWhat = (TextView) itemView.findViewById(R.id.tv_what);
             mTextWhen = (TextView) itemView.findViewById(R.id.tv_when);
             mMarkListener = listener;
         }
 
+        public void setWhat(String strWhat) {
+            mTextWhat.setText(strWhat);
+        }
+
+        public void setBackground(boolean boolCompleted) {
+            Drawable drawable;
+            if (boolCompleted) {
+                drawable=ContextCompat.getDrawable(mContext, R.color.bg_drop_row_completed);
+            } else {
+                drawable=ContextCompat.getDrawable(mContext, R.drawable.bg_row_drop);
+            }
+            Util.setBackground(mItemView,drawable);
+        }
+
         @Override
         public void onClick(View v) {
             mMarkListener.onMark(getLayoutPosition());
         }
+
     }
 
     public static class FooterHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

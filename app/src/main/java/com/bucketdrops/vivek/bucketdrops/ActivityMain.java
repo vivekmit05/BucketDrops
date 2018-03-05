@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.bucketdrops.vivek.bucketdrops.adapters.AdapterDrops;
 import com.bucketdrops.vivek.bucketdrops.adapters.AddListener;
+import com.bucketdrops.vivek.bucketdrops.adapters.CompleteListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.Divider;
 import com.bucketdrops.vivek.bucketdrops.adapters.MarkListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.SimpleTouchCallBack;
@@ -21,8 +22,8 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
-public class ActivityMain extends AppCompatActivity{
-    public static final String TAG="vivekMainThread";
+public class ActivityMain extends AppCompatActivity {
+    public static final String TAG = "vivekMainThread";
     Toolbar mToolbar;
     View mEmptyView;
     Button mAddDrop;
@@ -31,7 +32,7 @@ public class ActivityMain extends AppCompatActivity{
     RealmResults<Drop> mResults;
     AdapterDrops mAdapter;
 
-    private View.OnClickListener mBtnAddListener= new View.OnClickListener() {
+    private View.OnClickListener mBtnAddListener = new View.OnClickListener() {
         /**
          * Called when a view has been clicked.
          *
@@ -43,34 +44,42 @@ public class ActivityMain extends AppCompatActivity{
         }
     };
 
-    private AddListener mAddListener=new AddListener() {
+    private AddListener mAddListener = new AddListener() {
         @Override
         public void add() {
             showDialogAdd();
         }
     };
 
-    private MarkListener markListener =new MarkListener() {
+    private MarkListener markListener = new MarkListener() {
         @Override
         public void onMark(int position) {
             showDialogMark(position);
         }
     };
 
-    private void showDialogAdd(){
-        FragmentDialog dialogAdd=new FragmentDialog();
-        dialogAdd.show(getSupportFragmentManager(),"Add Drop");
+    private CompleteListener mCompleteListener = new CompleteListener() {
+        @Override
+        public void onComplete(int position) {
+            mAdapter.markComplete(position);
+        }
+    };
+
+    private void showDialogAdd() {
+        FragmentDialog dialogAdd = new FragmentDialog();
+        dialogAdd.show(getSupportFragmentManager(), "Add Drop");
     }
 
-    private void showDialogMark(int position){
-        DialogMark dialogMark=new DialogMark();
-        Bundle bundle=new Bundle();
-        bundle.putInt("POSITION",position);
+    private void showDialogMark(int position) {
+        DialogMark dialogMark = new DialogMark();
+        Bundle bundle = new Bundle();
+        bundle.putInt("POSITION", position);
         dialogMark.setArguments(bundle);
-        dialogMark.show(getSupportFragmentManager(),"Mark");
+        dialogMark.setCompleteListener(mCompleteListener);
+        dialogMark.show(getSupportFragmentManager(), "Mark");
     }
 
-    private RealmChangeListener mChangeListener= new RealmChangeListener() {
+    private RealmChangeListener mChangeListener = new RealmChangeListener() {
         @Override
         public void onChange(Object o) {
             mAdapter.update(mResults); /*To call Update method in AdapterDrop so that the change can be reflected after addition of an item*/
@@ -82,15 +91,15 @@ public class ActivityMain extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRealm=Realm.getDefaultInstance();
-        mResults=mRealm.where(Drop.class).findAllAsync();
+        mRealm = Realm.getDefaultInstance();
+        mResults = mRealm.where(Drop.class).findAllAsync();
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mAddDrop=(Button) findViewById(R.id.btnAddDrop);
-        mEmptyView=(View) findViewById(R.id.empty_drops);
-        mRecyclerView=(BucketRecyclerView) findViewById(R.id.rv_drops);
+        mAddDrop = (Button) findViewById(R.id.btnAddDrop);
+        mEmptyView = (View) findViewById(R.id.empty_drops);
+        mRecyclerView = (BucketRecyclerView) findViewById(R.id.rv_drops);
         try {
-            mRecyclerView.addItemDecoration(new Divider(this,LinearLayoutManager.VERTICAL));
+            mRecyclerView.addItemDecoration(new Divider(this, LinearLayoutManager.VERTICAL));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -98,14 +107,14 @@ public class ActivityMain extends AppCompatActivity{
         mRecyclerView.hideIfEmpty(mToolbar);
         mRecyclerView.showIfEmpty(mEmptyView);
 
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter=new AdapterDrops(this,mRealm,mResults,mAddListener, markListener);
+        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, markListener);
 
         mRecyclerView.setAdapter(mAdapter);
 
-        SimpleTouchCallBack callBack=new SimpleTouchCallBack(mAdapter);
-        ItemTouchHelper helper=new ItemTouchHelper(callBack);
+        SimpleTouchCallBack callBack = new SimpleTouchCallBack(mAdapter);
+        ItemTouchHelper helper = new ItemTouchHelper(callBack);
         helper.attachToRecyclerView(mRecyclerView);
 
         mAddDrop.setOnClickListener(mBtnAddListener);
