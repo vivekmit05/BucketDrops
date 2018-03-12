@@ -116,6 +116,7 @@ public class ActivityMain extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
         mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, markListener);
+        mAdapter.setHasStableIds(true); /*To set animation for recyler view rows*/
 
         mRecyclerView.setAdapter(mAdapter);
 

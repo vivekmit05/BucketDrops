@@ -65,6 +65,16 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         Log.d(TAG, "update: " + mResults.size());
     }
 
+
+    /*For animating recycyler view rows*/
+    @Override
+    public long getItemId(int position) {
+        if(position<mResults.size()){
+            return mResults.get(position).getAddedtime();
+        }
+        return RecyclerView.NO_ID;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (!mResults.isEmpty()) {
