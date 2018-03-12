@@ -1,5 +1,6 @@
 package com.bucketdrops.vivek.bucketdrops.adapters;
 
+import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
@@ -35,8 +36,24 @@ public class SimpleTouchCallBack extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        mListener.onSwipe(viewHolder.getLayoutPosition());
+    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        if(viewHolder instanceof AdapterDrops.DropHolder){
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
 
+    }
+
+    @Override
+    public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        if(viewHolder instanceof AdapterDrops.DropHolder){
+            super.onChildDrawOver(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        if(viewHolder instanceof AdapterDrops.DropHolder){
+            mListener.onSwipe(viewHolder.getLayoutPosition());
+        }
     }
 }
