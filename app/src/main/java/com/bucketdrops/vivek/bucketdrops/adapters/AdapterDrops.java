@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.bucketdrops.vivek.bucketdrops.AppBucketDrops;
 import com.bucketdrops.vivek.bucketdrops.R;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 import com.bucketdrops.vivek.bucketdrops.extras.Util;
@@ -32,9 +33,14 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private RealmResults<Drop> mResults;
     public static final String TAG = "Vivek";
     public static final int ITEM = 0;
-    public static final int FOOTER = 1;
+    public static final int NO_ITEM = 1;
+    public static final int FOOTER = 2;
+    public static final int COUNT_FOOTER = 1;
+    public static final int COUNT_NO_ITEMS = 1; /*To Display No Item View when there is no results while sorting option is set to COMPLETE or INCOMPLETE*/
     private AddListener mAddListener;
     private Realm mRealm;
+    private int mFilterOption;
+    private Context mContext;
 
 
     public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
@@ -44,6 +50,7 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener listener, MarkListener markListener) {
+        mContext=context;
         mInflater = LayoutInflater.from(context);
         update(results);
         mRealm = realm;
@@ -53,16 +60,29 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public void update(RealmResults<Drop> results) {
         mResults = results;
+        mFilterOption = AppBucketDrops.load(mContext);
         notifyDataSetChanged();
         Log.d(TAG, "update: " + mResults.size());
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (mResults == null || position < mResults.size()) {
-            return ITEM;
+        if (!mResults.isEmpty()) {
+            if (position < mResults.size()) {
+                return ITEM;
+            } else {
+                return FOOTER;
+            }
         } else {
-            return FOOTER;
+            if (mFilterOption == Filter.COMPLETE || mFilterOption == Filter.INCOMPLETE) {
+                if (position == 0) {
+                    return NO_ITEM;
+                } else {
+                    return FOOTER;
+                }
+            } else {
+                return ITEM;
+            }
         }
     }
 
@@ -81,6 +101,10 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (viewType == FOOTER) {
             View view = mInflater.inflate(R.layout.footer, parent, false);
             FooterHolder holder = new FooterHolder(view, mAddListener);
+            return holder;
+        } else if (viewType == NO_ITEM) {
+            View view = mInflater.inflate(R.layout.no_item, parent, false);
+            NoItemViewHolder holder = new NoItemViewHolder(view);
             return holder;
         } else {
             View view = mInflater.inflate(R.layout.row_drop, parent, false);
@@ -106,11 +130,16 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-
-        if (mResults == null || mResults.isEmpty()) {
-            return 0;
+        if (!mResults.isEmpty()) {
+            return mResults.size() + COUNT_FOOTER;
         } else {
-            return mResults.size() + 1;
+            if (mFilterOption == Filter.MOST_TIME_LEFT ||
+                    mFilterOption == Filter.LEAST_TIME_LEFT ||
+                    mFilterOption == Filter.NONE) {
+                return 0;
+            } else {
+                return COUNT_NO_ITEMS + COUNT_FOOTER;
+            }
         }
     }
 
@@ -159,11 +188,11 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public void setBackground(boolean boolCompleted) {
             Drawable drawable;
             if (boolCompleted) {
-                drawable=ContextCompat.getDrawable(mContext, R.color.bg_drop_row_completed);
+                drawable = ContextCompat.getDrawable(mContext, R.color.bg_drop_row_completed);
             } else {
-                drawable=ContextCompat.getDrawable(mContext, R.drawable.bg_row_drop);
+                drawable = ContextCompat.getDrawable(mContext, R.drawable.bg_row_drop);
             }
-            Util.setBackground(mItemView,drawable);
+            Util.setBackground(mItemView, drawable);
         }
 
         @Override
@@ -172,7 +201,7 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         public void setWhen(long whenTime) {
-            mTextWhen.setText(DateUtils.getRelativeTimeSpanString(whenTime,System.currentTimeMillis(),DateUtils.DAY_IN_MILLIS,DateUtils.FORMAT_ABBREV_ALL));
+            mTextWhen.setText(DateUtils.getRelativeTimeSpanString(whenTime, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL));
         }
     }
 
@@ -197,6 +226,13 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Override
         public void onClick(View v) {
             mListener.add();
+        }
+    }
+
+    public static class NoItemViewHolder extends RecyclerView.ViewHolder {
+
+        public NoItemViewHolder(View itemView) {
+            super(itemView);
         }
     }
 }

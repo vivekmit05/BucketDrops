@@ -1,6 +1,5 @@
 package com.bucketdrops.vivek.bucketdrops;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -96,7 +95,7 @@ public class ActivityMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        int filterOption=load();
+        int filterOption=AppBucketDrops.load(this);
 
         mRealm = Realm.getDefaultInstance();
         loadResult(filterOption);
@@ -154,41 +153,26 @@ public class ActivityMain extends AppCompatActivity {
                 break;
             case R.id.action_sort_desecending_dates:
                 filterOption=Filter.MOST_TIME_LEFT;
-                save(Filter.MOST_TIME_LEFT);
-
                 break;
             case R.id.action_sort_ascending_dates:
                 filterOption=Filter.LEAST_TIME_LEFT;
-                save(Filter.LEAST_TIME_LEFT);
                 break;
             case R.id.action_show_complete:
                 filterOption=Filter.COMPLETE;
-                save(Filter.COMPLETE);
                 break;
             case R.id.action_show_incomplete:
                 filterOption=Filter.INCOMPLETE;
-                save(Filter.INCOMPLETE);
                 break;
             default:
                 handled = false;
                 break;
         }
+        AppBucketDrops.save(this,filterOption);
         loadResult(filterOption);
         return handled;
     }
 
-    private void save(int filterOption) {
-        SharedPreferences pref = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putInt("filter", filterOption);
-        editor.apply();
-    }
 
-    private int load() {
-        SharedPreferences pref = getPreferences(MODE_PRIVATE);
-        int filterOption = pref.getInt("filter", Filter.NONE);
-        return filterOption;
-    }
 
     private void loadResult(int filterOption) {
         switch (filterOption) {
