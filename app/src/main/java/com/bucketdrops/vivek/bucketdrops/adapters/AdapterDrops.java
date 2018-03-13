@@ -28,6 +28,7 @@ import io.realm.RealmResults;
 
 public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SwipeListener {
 
+    private final ResetListener mResetListener;
     private MarkListener mMarkListener;
     private LayoutInflater mInflater; /*Declared here so that it has global scope in the file*/
     private RealmResults<Drop> mResults;
@@ -43,19 +44,20 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private Context mContext;
 
 
-    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
+   /* public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
         mInflater = LayoutInflater.from(context);
         mRealm = realm;
         update(results);
-    }
+    }*/
 
-    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener listener, MarkListener markListener) {
+    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener listener, MarkListener markListener,ResetListener resetListener) {
         mContext=context;
         mInflater = LayoutInflater.from(context);
         update(results);
         mRealm = realm;
         mAddListener = listener;
         mMarkListener = markListener;
+        mResetListener=resetListener;
     }
 
     public void update(RealmResults<Drop> results) {
@@ -161,7 +163,13 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             mRealm.commitTransaction();
             notifyItemRemoved(position);
         }
+        resetFilterIfEmpty();
+    }
 
+    private void resetFilterIfEmpty() {
+        if(mResults.isEmpty() && (mFilterOption==Filter.COMPLETE || mFilterOption==Filter.INCOMPLETE)){
+            mResetListener.reset();
+        }
     }
 
     public void markComplete(int position) {

@@ -17,6 +17,7 @@ import com.bucketdrops.vivek.bucketdrops.adapters.CompleteListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.Divider;
 import com.bucketdrops.vivek.bucketdrops.adapters.Filter;
 import com.bucketdrops.vivek.bucketdrops.adapters.MarkListener;
+import com.bucketdrops.vivek.bucketdrops.adapters.ResetListener;
 import com.bucketdrops.vivek.bucketdrops.adapters.SimpleTouchCallBack;
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
 import com.bucketdrops.vivek.bucketdrops.widgets.BucketRecyclerView;
@@ -69,6 +70,14 @@ public class ActivityMain extends AppCompatActivity {
         }
     };
 
+    private ResetListener mResetListener=new ResetListener() {
+        @Override
+        public void reset() {
+            AppBucketDrops.save(ActivityMain.this,Filter.NONE);
+            loadResult(Filter.NONE);
+        }
+    };
+
     private void showDialogAdd() {
         FragmentDialog dialogAdd = new FragmentDialog();
         dialogAdd.show(getSupportFragmentManager(), "Add Drop");
@@ -115,7 +124,7 @@ public class ActivityMain extends AppCompatActivity {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, markListener);
+        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, markListener,mResetListener);
         mAdapter.setHasStableIds(true); /*To set animation for recyler view rows*/
 
         mRecyclerView.setAdapter(mAdapter);
