@@ -7,13 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.bucketdrops.vivek.bucketdrops.beans.Drop;
-
-import java.util.Calendar;
+import com.bucketdrops.vivek.bucketdrops.widgets.BucketPickerView;
 
 import io.realm.Realm;
 
@@ -25,7 +23,7 @@ public class FragmentDialog extends DialogFragment {
 
     private ImageButton ibClose;
     private EditText etInputWhat;
-    private DatePicker dpInputWhen;
+    private BucketPickerView dpInputWhen;
     private Button btnAddIt;
 
 
@@ -53,17 +51,11 @@ public class FragmentDialog extends DialogFragment {
 
         String strWhat = etInputWhat.getText().toString();
         long currentTime = System.currentTimeMillis();
-        String date=dpInputWhen.getDayOfMonth()+"/"+dpInputWhen.getMonth()+"/"+dpInputWhen.getYear();
-        Calendar calendar=Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH,dpInputWhen.getDayOfMonth());
-        calendar.set(Calendar.MONTH,dpInputWhen.getMonth());
-        calendar.set(Calendar.YEAR,dpInputWhen.getYear());
-        calendar.set(Calendar.HOUR,0);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
+
+
 
         Realm objRealm = Realm.getDefaultInstance();
-        Drop objDrop = new Drop(strWhat, currentTime, calendar.getTimeInMillis(), false);
+        Drop objDrop = new Drop(strWhat, currentTime, dpInputWhen.getTime(), false);
         objRealm.beginTransaction();
         objRealm.copyToRealm(objDrop);
         objRealm.commitTransaction();
@@ -90,7 +82,7 @@ public class FragmentDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         ibClose = (ImageButton) view.findViewById(R.id.iv_close_dialog);
         etInputWhat = (EditText) view.findViewById(R.id.et_drop_dialog);
-        dpInputWhen = (DatePicker) view.findViewById(R.id.bpv_dialog);
+        dpInputWhen = (BucketPickerView) view.findViewById(R.id.bpv_dialog);
         btnAddIt = (Button) view.findViewById(R.id.btn_add_dialog);
 
         ibClose.setOnClickListener(btnClickListener);

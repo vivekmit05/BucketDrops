@@ -4,4 +4,5 @@
     <dimen name="btn_add_it_radius">2dp</dimen>
     <dimen name="iv_logo_size">192dp</dimen>
     <dimen name="iv_margin">84dp</dimen>
+    <dimen name="bg_picker_item_corner_radius">4dp</dimen>
 </resources>

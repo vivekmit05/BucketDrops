@@ -29,12 +29,12 @@
         android:hint="What is it?"
         android:padding="16dp"
         android:inputType="textVisiblePassword"/>
-    <DatePicker
+    <com.bucketdrops.vivek.bucketdrops.widgets.BucketPickerView
         android:id="@+id/bpv_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/et_drop_dialog"
-        android:datePickerMode="spinner"></DatePicker>
+        android:datePickerMode="spinner"></com.bucketdrops.vivek.bucketdrops.widgets.BucketPickerView>
     <Button
         android:id="@+id/btn_add_dialog"
         android:layout_width="match_parent"
